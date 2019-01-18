@@ -1,18 +1,36 @@
 package cn.com.nei;
 
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.*;
 
 public class Main {
+    static String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
+    static String filePath = "C:/test/download/ss";
+
     public static void main(String[] args) {
-        String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
-        String filePath = "C:/test/download/ss";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Resource> responseEntity = restTemplate.exchange( url, HttpMethod.GET, someHttpEntity, Resource.class );
+
+        InputStream responseInputStream;
+        try {
+            responseInputStream = responseEntity.getBody().getInputStream();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void main2(String[] args) {
+
 
         RestTemplate restTemplate = new RestTemplate();
         try {
-            //		Object result = restTemplate.getForObject(url, Object.class);
+
+            InputStream inputStream = restTemplate.getForObject(url, InputStream.class);
+            IOUtils.toByteArray(inputStream);
             HttpHeaders headers = new HttpHeaders();
 //            headers.add("range", "-500");
             headers.set("Range", "bytes=" + 1 + "-" + 100);
@@ -21,6 +39,7 @@ public class Main {
             System.out.println(headers);
 //            headers.setAccept("");
             ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<byte[]>(headers), byte[].class);
+
 
             byte[] body = response.getBody();
             System.out.println(body.length);
