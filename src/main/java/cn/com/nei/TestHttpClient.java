@@ -1,19 +1,19 @@
 package cn.com.nei;
 
 
+import cn.nei.tos3.config.StorageConfig;
+import cn.nei.tos3.sf.StorageFile;
+import cn.nei.tos3.sf.ToS3;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import sun.plugin2.message.HeartbeatMessage;
+import org.omg.CORBA.IntHolder;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -25,7 +25,7 @@ import java.io.InputStream;
 public class TestHttpClient {
     public static void main(String[] args) throws IOException {
         String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
-        String filePath = "C:/test/fs.properties";
+//        String filePath = "C:/test/fs.properties";
 
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -37,8 +37,21 @@ public class TestHttpClient {
         httpget.setHeader("Range", "bytes=" + 1 + "-" + 100);
         CloseableHttpResponse response = httpclient.execute(httpget);
         InputStream content = response.getEntity().getContent();
+        System.out.println(response.getStatusLine());
+        System.out.println(response.getEntity().getContentLength());
 
-        BufferedInputStream bis = new BufferedInputStream(content);
+
+        byte[] b2 = IOUtils.toByteArray(url);
+//        System.out.println(bytes.length);
+        StorageConfig sc = new StorageConfig("C:\\test\\s3.properties");
+        sc.init();
+        StorageFile toS3 = new ToS3(sc);
+        boolean open = toS3.open("bofei的一个3M+3M文件", "w");
+        IntHolder holder = new IntHolder();
+        toS3.write(b2, 0, b2.length, holder);
+        toS3.close();
+
+//        BufferedInputStream bis = new BufferedInputStream(content);
 //        Header[] allHeaders = response.getAllHeaders();
 //        for (Header header : allHeaders) {
 //            System.out.println(header.getName());
@@ -59,8 +72,11 @@ public class TestHttpClient {
     /**
      * 通过GET方式发起http请求
      */
-//    @Test
-    public void requestByGetMethod(){
+//    @
+    public static void main2(String[] args) {
+        requestByGetMethod();
+    }
+    public static void requestByGetMethod(){
         //创建默认的httpClient实例
         CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
