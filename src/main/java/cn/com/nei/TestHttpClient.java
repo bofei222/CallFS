@@ -25,8 +25,6 @@ import java.io.InputStream;
 public class TestHttpClient {
     public static void main(String[] args) throws IOException {
         String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
-//        String filePath = "C:/test/fs.properties";
-
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
 //        HttpHead httpHead = new HttpHead(url);
@@ -36,36 +34,30 @@ public class TestHttpClient {
 //        httpget.addHeader("Range", "bytes="+1+"-"+11);
         httpget.setHeader("Range", "bytes=" + 1 + "-" + 100);
         CloseableHttpResponse response = httpclient.execute(httpget);
-        InputStream content = response.getEntity().getContent();
         System.out.println(response.getStatusLine());
         System.out.println(response.getEntity().getContentLength());
 
+        InputStream is = response.getEntity().getContent();
+        BufferedInputStream bis = new BufferedInputStream(is);
 
-        byte[] b2 = IOUtils.toByteArray(url);
-//        System.out.println(bytes.length);
+        byte[] b = new byte[1024 * 1024];
+        int l = 0;
         StorageConfig sc = new StorageConfig("C:\\test\\s3.properties");
         sc.init();
         StorageFile toS3 = new ToS3(sc);
-        boolean open = toS3.open("bofei的一个3M+3M文件", "w");
         IntHolder holder = new IntHolder();
-        toS3.write(b2, 0, b2.length, holder);
-        toS3.close();
 
-//        BufferedInputStream bis = new BufferedInputStream(content);
-//        Header[] allHeaders = response.getAllHeaders();
-//        for (Header header : allHeaders) {
-//            System.out.println(header.getName());
-//        }
-////        byte[] bytes = IOUtils.toByteArray(content);
-////        System.out.println(new String(bytes));
-////        System.out.println(bytes.length);
-//        byte[] buff = new byte[1024 * 1024];
-//        int l = 0;
-////        new BufferedWriter(new)
-//        while ((l = bis.read(buff, 0, buff.length)) != -1) {
-//            System.out.println(new String(buff));
-//        }
-//        bis.close();
+        boolean open = toS3.open("bofei的一个10文件", "w");
+        try {
+            l = bis.read(b);
+        } catch (IOException e) {
+
+            e.printStackTrace();
+        }
+        while (l != -1) {
+            toS3.write(b, 0, b.length, holder);
+        }
+        toS3.close();
 
     }
 

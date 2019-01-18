@@ -21,6 +21,11 @@ public class Main {
             System.out.println(headers);
 //            headers.setAccept("");
             ResponseEntity<byte[]> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<byte[]>(headers), byte[].class);
+
+            byte[] body = response.getBody();
+            System.out.println(body.length);
+
+
 //            ResponseEntity<byte[]> forEntity = restTemplate.getForEntity(url, byte[].class);
 //            byte[] body = forEntity.getBody();
 //            System.out.println(body.length);
