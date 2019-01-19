@@ -1,5 +1,8 @@
 package cn.com.nei;
 
+import cn.nei.tos3.config.StorageConfig;
+import cn.nei.tos3.sf.StorageFile;
+import cn.nei.tos3.sf.ToS3;
 import org.apache.commons.io.IOUtils;
 import org.omg.CORBA.IntHolder;
 import org.springframework.core.io.Resource;
@@ -9,21 +12,43 @@ import org.springframework.web.client.RestTemplate;
 import java.io.*;
 
 public class Main {
-    static String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
+    static String url = "http://mirrors.cn99.com/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso";
+    static String url2 = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
     static String filePath = "C:/test/download/ss";
 
+        public static void main(String[] args) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+//        headers.set("Range", "bytes=" + 1 + "-" + 100);
+        ResponseEntity<Resource> responseEntity = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(headers), Resource.class );
+        System.out.println(responseEntity.getBody().contentLength());
+//        try {
+//            System.out.println(responseEntity.getStatusCode());
+//            HttpHeaders headers1 = responseEntity.getHeaders();
+//            headers1.forEach((k,v) -> System.out.println(k + " " + v));
+//            InputStream io = responseEntity.getBody().getInputStream();
+//            BufferedInputStream bis = new BufferedInputStream(io);
+//            byte[] b = new byte[10];
+//            int read = 0;
+//            while (read != -1) {
+//
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-    public static void main(String[] args) {
+    }
+    public static void main3(String[] args) {
         StorageConfig sc = new StorageConfig("C:\\test\\s3.properties");
         sc.init();
-        StorageFile toS3 = new ToS3(sc);
+        StorageFile s3 = new ToS3(sc);
 
         RestTemplate restTemplate = new RestTemplate();
-        test(restTemplate, 0L);
+        test(restTemplate, s3, 0L);
     }
 
 
-    public static void test(RestTemplate restTemplate, StorageFile toS3, long l) {
+    public static void test(RestTemplate restTemplate, StorageFile s3, long l) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Range", "bytes=" + l+1 + "-" + "结尾");
         ResponseEntity<Resource> responseEntity = restTemplate.exchange( url, HttpMethod.GET, new HttpEntity<>(headers), Resource.class );
@@ -43,11 +68,11 @@ public class Main {
 //            throw new RuntimeException(e);
 
             headers.set("Range", "bytes=-1");
-            test(restTemplate, toS3, l);
+            test(restTemplate, s3, l);
         }
         while (read != -1) {
             IntHolder holder = new IntHolder();
-            toS3.write(b, 0, b.length, holder);
+            s3.write(b, 0, b.length, holder);
             // 记录已写长度
             l += holder.value;
         }
