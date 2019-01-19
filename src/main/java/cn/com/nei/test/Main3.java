@@ -1,4 +1,4 @@
-package cn.com.nei;
+package cn.com.nei.test;
 
 import java.io.*;
 import java.net.HttpURLConnection;

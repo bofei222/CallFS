@@ -1,11 +1,9 @@
-package cn.com.nei;
-
+package cn.com.nei.test;
 
 import cn.nei.tos3.config.StorageConfig;
 import cn.nei.tos3.sf.StorageFile;
 import cn.nei.tos3.sf.ToS3;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -13,64 +11,13 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.omg.CORBA.IntHolder;
-import org.omg.CORBA.RepositoryIdHelper;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * @Author bofei
- * @Date 2019/1/18 11:23
+ * @Date 2019/1/18 17:39
  * @Description
  */
-public class TestHttpClient {
-    static String url = "http://45.77.21.15:81/test.html";
-    static String url2 = "http://mirrors.cn99.com/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso";
-    public static void main(String[] args) throws IOException {
-//        String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
-        CloseableHttpClient httpclient = HttpClients.createDefault();
-
-        HttpGet request = new HttpGet(url);
-//        httpget.addHeader("Range", "bytes="+1+"-"+11);
-        request.setHeader("Range", "bytes=" + 1 + "-" + 999);
-        CloseableHttpResponse response = httpclient.execute(request);
-        Header[] allHeaders = response.getAllHeaders();
-
-        for (Header header : allHeaders) {
-            System.out.println(header.getName() + " " + header.getValue());
-        }
-        System.out.println("========");
-        System.out.println(response.getStatusLine());
-
-
-
-
-//        InputStream is = response.getEntity().getContent();
-//        BufferedInputStream bis = new BufferedInputStream(is);
-//
-//        byte[] b = new byte[1024 * 1024];
-//        long l = 0;
-//        StorageConfig sc = new StorageConfig("C:\\test\\s3.properties");
-//        sc.init();
-//        StorageFile toS3 = new ToS3(sc);
-//        IntHolder holder = new IntHolder();
-//
-//        boolean open = toS3.open("bofei的一个10文件", "w");
-//
-//        while (l != -1) {
-//            try {
-//                l = bis.read(b);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            toS3.write(b, 0, b.length, holder);
-//        }
-//
-//
-//        toS3.close();
-
-    }
+public class Main10 {
 
     /**
      * 通过GET方式发起http请求
@@ -114,5 +61,25 @@ public class TestHttpClient {
 
     }
 
+    public static void main(String[] args) {
+        int p1 = 5 * 1024 * 1024; //分段大小在 5MB - 5GB 之间，只有最后一个分段才允许小于 5MB，不可避免的
+        int p2 = 3 * 1024 * 1024; //分段大小在 5MB - 5GB 之间，只有最后一个分段才允许小于 5MB，不可避免的
+        int p3 = 3 * 1024 * 1024; //分段大小在 5MB - 5GB 之间，只有最后一个分段才允许小于 5MB，不可避免的
+        byte[] b1 = RandomStringUtils.randomAlphabetic(p1).getBytes(); //填充一个 5MB 的字符串
+        byte[] b2 = RandomStringUtils.randomAlphabetic(p2).getBytes(); //填充一个 5MB 的字符串
+        byte[] b3 = RandomStringUtils.randomAlphabetic(p3).getBytes(); //填充一个 5MB 的字符串
+        byte[] b4 = "abcdefgh".getBytes();
 
+        StorageConfig sc = new StorageConfig("C:/test/s3.properties");
+        sc.init();
+        StorageFile toS3 = new ToS3(sc);
+        boolean open = toS3.open("bofei的一个13文件", "w");
+        IntHolder holder = new IntHolder();
+//        toS3.write(b1, 0, b1.length, holder);
+//        toS3.write(b2, 0, b2.length, holder);
+//        toS3.write(b3, 0, b3.length, holder);
+        toS3.write(b4, 0, b4.length, holder);
+        toS3.close();
+
+    }
 }

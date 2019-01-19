@@ -1,4 +1,4 @@
-package cn.com.nei;
+package cn.com.nei.test;
 
 import cn.nei.tos3.config.StorageConfig;
 import cn.nei.tos3.sf.StorageFile;
@@ -9,7 +9,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class Main {
     static String url = "http://mirrors.cn99.com/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-DVD-1810.iso";

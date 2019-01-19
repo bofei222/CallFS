@@ -1,4 +1,4 @@
-package cn.com.nei;
+package cn.com.nei.test;
 
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
