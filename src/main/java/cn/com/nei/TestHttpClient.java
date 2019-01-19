@@ -23,7 +23,7 @@ import java.io.InputStream;
  * @Description
  */
 public class TestHttpClient {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
@@ -60,7 +60,6 @@ public class TestHttpClient {
         toS3.close();
 
     }
-
     /**
      * 通过GET方式发起http请求
      */

@@ -1,6 +1,7 @@
 package cn.com.nei;
 
 import org.apache.commons.io.IOUtils;
+import org.omg.CORBA.IntHolder;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -11,18 +12,47 @@ public class Main {
     static String url = "http://192.168.0.108:8080/uploadAndDownload/downloadFileAction";
     static String filePath = "C:/test/download/ss";
 
+
     public static void main(String[] args) {
+        StorageConfig sc = new StorageConfig("C:\\test\\s3.properties");
+        sc.init();
+        StorageFile toS3 = new ToS3(sc);
+
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Resource> responseEntity = restTemplate.exchange( url, HttpMethod.GET, someHttpEntity, Resource.class );
+        test(restTemplate, 0L);
+    }
+
+
+    public static void test(RestTemplate restTemplate, StorageFile toS3, long l) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Range", "bytes=" + l+1 + "-" + "结尾");
+        ResponseEntity<Resource> responseEntity = restTemplate.exchange( url, HttpMethod.GET, new HttpEntity<>(headers), Resource.class );
 
         InputStream responseInputStream;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        byte[] b = new byte[1024];
+        int read = 0;
+
         try {
             responseInputStream = responseEntity.getBody().getInputStream();
+            read = responseInputStream.read(b);
+            throw new IOException();
         }
         catch (IOException e) {
-            throw new RuntimeException(e);
+//            throw new RuntimeException(e);
+
+            headers.set("Range", "bytes=-1");
+            test(restTemplate, toS3, l);
+        }
+        while (read != -1) {
+            IntHolder holder = new IntHolder();
+            toS3.write(b, 0, b.length, holder);
+            // 记录已写长度
+            l += holder.value;
         }
     }
+
     public static void main2(String[] args) {
 
 
